@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pencatat Pengeluaran & Anggaran</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Pencatat Pengeluaran &amp; Anggaran</h1>
+    <button id="themeToggle" aria-label="Ganti mode gelap/terang">🌙</button>
+  </header>
+
+  <main>
+
+    <!-- Total Saldo -->
+    <section id="balance-section">
+      <p class="balance-label">TOTAL SALDO</p>
+      <p class="balance-amount" id="totalBalance">Rp 0</p>
+
+      <fieldset id="limit-fieldset">
+        <legend>Batas Pengeluaran</legend>
+        <label for="spendingLimit">Atur Batas: Rp</label>
+        <input type="number" id="spendingLimit" min="0" step="1000" placeholder="0" />
+        <button id="setLimitBtn">Simpan</button>
+        <p id="limitWarning" role="alert" hidden>⚠️ Pengeluaran kamu sudah melebihi batas!</p>
+      </fieldset>
+    </section>
+
+    <!-- Form Tambah Transaksi -->
+    <section id="form-section">
+      <h2>Tambah Transaksi</h2>
+      <form id="transactionForm" novalidate>
+
+        <fieldset>
+          <legend>Detail Transaksi</legend>
+
+          <label for="itemName">Nama Item</label>
+          <input type="text" id="itemName" placeholder="contoh: Makan siang" autocomplete="off" required />
+          <span class="error-msg" id="itemNameError"></span>
+
+          <label for="amount">Jumlah (Rp)</label>
+          <input type="number" id="amount" placeholder="contoh: 25000" min="1" step="500" required />
+          <span class="error-msg" id="amountError"></span>
+
+          <label for="category">Kategori</label>
+          <!-- Custom dropdown kategori -->
+          <div class="custom-select-wrapper" id="categoryWrapper">
+            <button type="button" class="custom-select-trigger" id="categoryTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="categoryDisplay">-- Pilih Kategori --</span>
+              <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <ul class="custom-select-options" id="categoryOptions" role="listbox" aria-label="Pilih Kategori">
+              <li class="custom-option placeholder-option" data-value="" role="option">-- Pilih Kategori --</li>
+              <li class="custom-option" data-value="Makanan" data-kat="Makanan" role="option">🍜 Makanan</li>
+              <li class="custom-option" data-value="Transportasi" data-kat="Transportasi" role="option">🚗 Transportasi</li>
+              <li class="custom-option" data-value="Hiburan" data-kat="Hiburan" role="option">🎮 Hiburan</li>
+            </ul>
+          </div>
+          <!-- Select asli disembunyikan, tetap dipakai untuk nilai form -->
+          <select id="category" required aria-hidden="true" tabindex="-1" style="display:none">
+            <option value="">-- Pilih Kategori --</option>
+            <option value="Makanan">Makanan</option>
+            <option value="Transportasi">Transportasi</option>
+            <option value="Hiburan">Hiburan</option>
+          </select>
+          <span class="error-msg" id="categoryError"></span>
+
+        </fieldset>
+
+        <fieldset id="custom-category-fieldset">
+          <legend>Tambah Kategori Kustom</legend>
+          <label for="newCategory">Nama Kategori</label>
+          <input type="text" id="newCategory" placeholder="contoh: Kesehatan" autocomplete="off" />
+          <button type="button" id="addCategoryBtn">+ Tambah Kategori</button>
+        </fieldset>
+
+        <button type="submit" id="submitBtn">Tambah Transaksi</button>
+
+      </form>
+    </section>
+
+    <!-- Daftar Transaksi + Grafik -->
+    <section id="dashboard-section">
+
+      <article id="transaction-article">
+        <header>
+          <h2>Daftar Transaksi</h2>
+          <!-- Custom dropdown urutkan -->
+          <div class="custom-select-wrapper sort-wrapper" id="sortWrapper">
+            <button type="button" class="custom-select-trigger sort-trigger" id="sortTrigger" aria-haspopup="listbox" aria-expanded="false">
+              <span id="sortDisplay">Terbaru</span>
+              <svg class="select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <ul class="custom-select-options sort-options" id="sortOptions" role="listbox" aria-label="Urutkan transaksi">
+              <li class="custom-option active" data-value="date-desc" role="option">📅 Terbaru</li>
+              <li class="custom-option" data-value="date-asc" role="option">📅 Terlama</li>
+              <li class="custom-option" data-value="amount-desc" role="option">💰 Jumlah (Besar → Kecil)</li>
+              <li class="custom-option" data-value="amount-asc" role="option">💰 Jumlah (Kecil → Besar)</li>
+              <li class="custom-option" data-value="category" role="option">🏷️ Kategori</li>
+            </ul>
+          </div>
+          <!-- Select asli disembunyikan -->
+          <select id="sortBy" aria-hidden="true" tabindex="-1" style="display:none">
+            <option value="date-desc">Terbaru</option>
+            <option value="date-asc">Terlama</option>
+            <option value="amount-desc">Jumlah (Besar → Kecil)</option>
+            <option value="amount-asc">Jumlah (Kecil → Besar)</option>
+            <option value="category">Kategori</option>
+          </select>
+        </header>
+
+        <ul id="transactionList" aria-live="polite">
+          <li id="emptyState">Belum ada transaksi. Tambahkan di atas!</li>
+        </ul>
+      </article>
+
+      <aside id="chart-aside">
+        <h2>Pengeluaran per Kategori</h2>
+        <figure>
+          <canvas id="spendingChart" aria-label="Diagram lingkaran pengeluaran per kategori" role="img"></canvas>
+          <figcaption id="chartEmpty">Tambahkan transaksi untuk melihat grafik.</figcaption>
+        </figure>
+      </aside>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Pencatat Pengeluaran &amp; Anggaran &copy; 2026</p>
+  </footer>
+
+  <!-- Kontainer notifikasi toast -->
+  <div id="toastContainer" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Chart.js CDN, lalu logika utama -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
